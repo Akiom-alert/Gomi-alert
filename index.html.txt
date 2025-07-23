@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ゴミ通知テスト</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h2>ゴミ出し通知</h2>
+  <p id="user-name">ユーザー確認中...</p>
+  <button onclick="notify()">ゴミあります</button>
+  <p id="status"></p>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCEN2tZG6Wjvpyas4e6vXvMIq1zKpqSt2w",
+      authDomain: "gomi-alert-test.firebaseapp.com",
+      projectId: "gomi-alert-test",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function main() {
+      await liff.init({ liffId: "2007807218" }); // あとで正確なLIFF IDに差し替え
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+      const profile = await liff.getProfile();
+      document.getElementById("user-name").innerText = `こんにちは ${profile.displayName} さん`;
+
+      window.userId = profile.userId;
+      window.displayName = profile.displayName;
+    }
+
+    async function notify() {
+      const now = new Date();
+      await db.collection("gomi_notifications").add({
+        userId: window.userId,
+        name: window.displayName,
+        timestamp: firebase.firestore.Timestamp.fromDate(now),
+      });
+      document.getElementById("status").innerText = "通知を送信しました。";
+    }
+
+    main();
+  </script>
+</body>
+</html>
