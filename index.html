@@ -47,5 +47,30 @@
 
     main();
   </script>
+  <script>
+  document.getElementById("your-button-id").addEventListener("click", () => {
+    fetch('https://script.google.com/macros/s/【GASのURL】/exec', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        events: [
+          {
+            replyToken: 'dummy',
+            source: {
+              userId: window.userId // liff.getContext()で取得済みのuserIdがwindowに保存されているならこれでOK
+            }
+          }
+        ]
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log('通知成功:', data);
+      alert("収集通知を送りました！");
+    });
+  });
+</script>
 </body>
 </html>
